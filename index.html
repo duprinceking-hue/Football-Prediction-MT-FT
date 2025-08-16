@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse MT/FT & 1ère MT / 2e MT - Haute Précision</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                        'blue-custom': '#4285F4'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+    </script>
+
+    <div class="max-w-md mx-auto bg-white dark:bg-gray-800 min-h-screen">
+        <!-- Header -->
+        <div class="gradient-bg p-4 text-white">
+            <div class="flex items-center mb-2">
+                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center mr-3">
+                    <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                        <div class="w-3 h-3 bg-white rounded-full"></div>
+                    </div>
+                </div>
+                <h1 class="text-lg font-bold">Analyse MT/FT & 1ère MT / 2e MT - Haute Précision</h1>
+            </div>
+        </div>
+
+        <!-- Configuration Screen -->
+        <div id="configScreen" class="p-4 space-y-6">
+            <!-- Teams Section -->
+            <div class="bg-blue-50 dark:bg-gray-700 p-4 rounded-lg">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Équipe à domicile</label>
+                        <input type="text" id="homeTeam" value="USA" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Équipe à l'extérieur</label>
+                        <input type="text" id="awayTeam" value="Mexique" class="w-full p-2 border-2 border-blue-400 rounded-md text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                    </div>
+                </div>
+
+                <!-- Checkboxes -->
+                <div class="space-y-3">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="eliminationMatch" class="mr-3 w-4 h-4">
+                        <span class="text-gray-700 dark:text-gray-300">Match à élimination directe ou amical</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" id="firstConfrontation" class="mr-3 w-4 h-4">
+                        <span class="text-gray-700 dark:text-gray-300">Première confrontation entre les deux équipes</span>
+                    </label>
+                </div>
+
+                <!-- Rankings -->
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Classement domicile</label>
+                        <input type="number" id="homeRanking" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Classement extérieur</label>
+                        <input type="number" id="awayRanking" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                    </div>
+                </div>
+
+                <!-- Odds -->
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cote 1 (domicile)</label>
+                        <input type="number" id="homeOdds" value="3.06" step="0.01" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cote 2 (extérieur)</label>
+                        <input type="number" id="awayOdds" value="2.57" step="0.01" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Direct Confrontations -->
+            <div class="bg-blue-50 dark:bg-gray-700 p-4 rounded-lg">
+                <h3 class="font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+                    📊 Confrontations directes (MT / FT / Position équipe A)
+                </h3>
+                <div id="directConfrontations" class="space-y-2">
+                    <!-- Default matches -->
+                    <div class="grid grid-cols-4 gap-2 items-center">
+                        <input type="text" value="1-0" class="p-2 border border-gray-300 dark:border-gray-600 rounded text-center text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                        <input type="text" value="2-0" class="p-2 border border-gray-300 dark:border-gray-600 rounded text-center text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                        <select class="p-2 border border-gray-300 dark:border-gray-600 rounded text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                            <option>ext</option>
+                            <option>dom</option>
+                        </select>
+                        <button onclick="removeMatch(this)" class="text-red-500 hover:text-red-700">🗑️</button>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 items-center">
+                        <input type="text" value="1-0" class="p-2 border border-gray-300 dark:border-gray-600 rounded text-center text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                        <input type="text" value="2-0" class="p-2 border border-gray-300 dark:border-gray-600 rounded text-center text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                        <select class="p-2 border border-gray-300 dark:border-gray-600 rounded text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                            <option>dom</option>
+                            <option>ext</option>
+                        </select>
+                        <button onclick="removeMatch(this)" class="text-red-500 hover:text-red-700">🗑️</button>
+                    </div>
+                </div>
+                <button onclick="addDirectMatch()" class="mt-3 text-blue-500 hover:text-blue-700 text-sm">+ Ajouter un match</button>
+            </div>
+
+            <!-- Home Team Recent Form -->
+            <div class="bg-blue-50 dark:bg-gray-700 p-4 rounded-lg">
+                <h3 class="font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+                    📈 Forme récente de l'équipe à domicile (5 derniers matchs)
+                </h3>
+                <div id="homeRecentForm" class="space-y-2">
+                    <div class="grid grid-cols-4 gap-2 items-center">
+                        <input type="text" value="2-0" class="p-2 border border-gray-300 dark:border-gray-600 rounded text-center text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                        <input type="text" value="2-1" class="p-2 border border-gray-300 dark:border-gray-600 rounded text-center text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                        <select class="p-2 border border-gray-300 dark:border-gray-600 rounded text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                            <option>dom</option>
+                            <option>ext</option>
+                        </select>
+                        <button onclick="removeMatch(this)" class="text-red-500 hover:text-red-700">🗑️</button>
+                    </div>
+                </div>
+                <button onclick="addHomeMatch()" class="mt-3 text-blue-500 hover:text-blue-700 text-sm">+ Ajouter un match</button>
+            </div>
+
+            <!-- Away Team Recent Form -->
+            <div class="bg-blue-50 dark:bg-gray-700 p-4 rounded-lg">
+                <h3 class="font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+                    📉 Forme récente de l'équipe à l'extérieur (5 derniers matchs)
+                </h3>
+                <div id="awayRecentForm" class="space-y-2">
+                    <div class="grid grid-cols-4 gap-2 items-center">
+                        <input type="text" value="1-0" class="p-2 border border-gray-300 dark:border-gray-600 rounded text-center text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                        <input type="text" value="3-2" class="p-2 border border-gray-300 dark:border-gray-600 rounded text-center text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                        <select class="p-2 border border-gray-300 dark:border-gray-600 rounded text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                            <option>dom</option>
+                            <option>ext</option>
+                        </select>
+                        <button onclick="removeMatch(this)" class="text-red-500 hover:text-red-700">🗑️</button>
+                    </div>
+                </div>
+                <button onclick="addAwayMatch()" class="mt-3 text-blue-500 hover:text-blue-700 text-sm">+ Ajouter un match</button>
+            </div>
+
+            <!-- Analyze Button -->
+            <button onclick="runAnalysis()" class="w-full bg-blue-custom text-white py-3 px-6 rounded-lg font-medium text-base hover:bg-blue-600 transition-colors">
+                🧠 Lancer l'analyse
+            </button>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="p-4 space-y-4 hidden">
+            <div class="bg-blue-50 dark:bg-gray-700 p-4 rounded-lg">
+                <h2 class="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center">
+                    🧠 Résultat de l'analyse
+                </h2>
+                
+                <div class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                    <p class="flex items-center">
+                        🔍 <span id="analysisTeams" class="ml-2"></span>
+                    </p>
+                    
+                    <p id="weightedScore"></p>
+                    <p id="ranking"></p>
+                    <p id="odds"></p>
+                    
+                    <div class="border-t pt-3 mt-3">
+                        <p class="flex items-center">🎯 <span id="mtftPrediction" class="ml-2"></span></p>
+                        <p class="flex items-center">🧠 <span id="halfPrediction" class="ml-2"></span></p>
+                        <p class="flex items-center">✅ <span id="safeTip" class="ml-2"></span></p>
+                        <p class="flex items-center">🎯 <span id="exactScores" class="ml-2"></span></p>
+                    </div>
+                    
+                    <div class="border-t pt-3 mt-3 bg-yellow-50 dark:bg-yellow-900 p-3 rounded">
+                        <p class="flex items-center text-yellow-800 dark:text-yellow-200">
+                            🔑 Rejoignez notre canal Telegram pour plus de prédictions exclusives :
+                        </p>
+                        <p class="mt-1">
+                            👉<br>
+                            <a href="https://t.me/astucepronos2" class="text-blue-500 hover:text-blue-700 underline">https://t.me/astucepronos2</a>
+                        </p>
+                    </div>
+                </div>
+                
+                <button onclick="goBack()" class="w-full bg-gray-500 text-white py-2 px-4 rounded-lg mt-4 hover:bg-gray-600 transition-colors">
+                    ← Retour à la configuration
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addDirectMatch() {
+            const container = document.getElementById('directConfrontations');
+            const matchDiv = document.createElement('div');
+            matchDiv.className = 'grid grid-cols-4 gap-2 items-center';
+            matchDiv.innerHTML = `
+                <input type="text" placeholder="0-0" class="p-2 border border-gray-300 dark:border-gray-600 rounded text-center text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                <input type="text" placeholder="0-0" class="p-2 border border-gray-300 dark:border-gray-600 rounded text-center text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                <select class="p-2 border border-gray-300 dark:border-gray-600 rounded text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                    <option>dom</option>
+                    <option>ext</option>
+                </select>
+                <button onclick="removeMatch(this)" class="text-red-500 hover:text-red-700">🗑️</button>
+            `;
+            container.appendChild(matchDiv);
+        }
+
+        function addHomeMatch() {
+            const container = document.getElementById('homeRecentForm');
+            const matchDiv = document.createElement('div');
+            matchDiv.className = 'grid grid-cols-4 gap-2 items-center';
+            matchDiv.innerHTML = `
+                <input type="text" placeholder="0-0" class="p-2 border border-gray-300 dark:border-gray-600 rounded text-center text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                <input type="text" placeholder="0-0" class="p-2 border border-gray-300 dark:border-gray-600 rounded text-center text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                <select class="p-2 border border-gray-300 dark:border-gray-600 rounded text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                    <option>dom</option>
+                    <option>ext</option>
+                </select>
+                <button onclick="removeMatch(this)" class="text-red-500 hover:text-red-700">🗑️</button>
+            `;
+            container.appendChild(matchDiv);
+        }
+
+        function addAwayMatch() {
+            const container = document.getElementById('awayRecentForm');
+            const matchDiv = document.createElement('div');
+            matchDiv.className = 'grid grid-cols-4 gap-2 items-center';
+            matchDiv.innerHTML = `
+                <input type="text" placeholder="0-0" class="p-2 border border-gray-300 dark:border-gray-600 rounded text-center text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                <input type="text" placeholder="0-0" class="p-2 border border-gray-300 dark:border-gray-600 rounded text-center text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                <select class="p-2 border border-gray-300 dark:border-gray-600 rounded text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                    <option>dom</option>
+                    <option>ext</option>
+                </select>
+                <button onclick="removeMatch(this)" class="text-red-500 hover:text-red-700">🗑️</button>
+            `;
+            container.appendChild(matchDiv);
+        }
+
+        function removeMatch(button) {
+            button.closest('.grid').remove();
+        }
+
+        function runAnalysis() {
+            const homeTeam = document.getElementById('homeTeam').value;
+            const awayTeam = document.getElementById('awayTeam').value;
+            const homeOdds = parseFloat(document.getElementById('homeOdds').value);
+            const awayOdds = parseFloat(document.getElementById('awayOdds').value);
+
+            // Simulate analysis calculation
+            const homeScore = Math.random() * 20 + 10; // Random score between 10-30
+            const awayScore = Math.random() * 15 + 5;  // Random score between 5-20
+            
+            // Update results
+            document.getElementById('analysisTeams').textContent = `Analyse entre ${homeTeam} (dom) vs ${awayTeam} (ext)`;
+            document.getElementById('weightedScore').textContent = `Score pondéré : ${homeScore.toFixed(2)} vs ${awayScore.toFixed(2)}`;
+            document.getElementById('ranking').textContent = `Classement : NaN vs NaN |`;
+            document.getElementById('odds').textContent = `Cotes : 1 = ${homeOdds} / 2 = ${awayOdds}`;
+            
+            // Predictions based on scores
+            const mtftPred = homeScore > awayScore ? '1/X' : 'X/2';
+            const halfPred = homeScore > awayScore ? '1/1' : '2/2';
+            const safeTip = homeScore > awayScore ? `Victoire de l'équipe à domicile ou Nul (1X)` : `Victoire de l'équipe à l'extérieur ou Nul (X2)`;
+            const exactScores = homeScore > awayScore ? '1-0 ou 1-1' : '0-1 ou 1-1';
+            
+            document.getElementById('mtftPrediction').textContent = `Prédiction MT/FT : ${mtftPred}`;
+            document.getElementById('halfPrediction').textContent = `1ère MT / 2e MT : ${halfPred}`;
+            document.getElementById('safeTip').textContent = `Conseil SAFE : ${safeTip}`;
+            document.getElementById('exactScores').textContent = `Scores exacts possibles : ${exactScores}`;
+
+            // Show results screen
+            document.getElementById('configScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+        }
+
+        function goBack() {
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('configScreen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
